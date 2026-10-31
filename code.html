@@ -116,9 +116,9 @@
   // Public values only. The publishable key ships inside the app too; never put a secret key here.
   var SUPABASE_URL = 'https://chhrkvilpuxtcinragkc.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_Zydota601EIs85ZJLyM1sA_EiifVBQe';
-  // Web Sign in with Apple needs a Services ID and its secret in Supabase (see NOTES_FOR_REZA.md).
-  // Leave false until that is set up, or the button lands on an Apple error page.
-  var APPLE_WEB = false;
+  // Web Sign in with Apple: Services ID com.brainboxeduc.web (first Client ID in Supabase).
+  // Its OAuth secret expires every 6 months (next: about end of April 2027); regenerate it from the .p8.
+  var APPLE_WEB = true;
   var PAGE_URL = 'https://r-samanfar.github.io/brainbox-legal/code.html';
 
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
