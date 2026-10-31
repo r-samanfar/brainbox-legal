@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>BrainBox: enter your code</title>
+<!--
+  Class and promo codes for iPhone learners (App Store guideline 3.1.1 keeps the code box out of
+  the iOS app). Same Supabase project and RPCs as the Android app: redeem_class_code and
+  my_entitlements (migration 0007). Only the public publishable key is here; RLS and the
+  security-definer RPCs are the wall. Sign-in never creates an account: learners make their
+  account in the app first, so the app's 13+ age gate always applies.
+  Source: D:\BrainBox\Legal Documents\web\code.html, published from r-samanfar/brainbox-legal.
+-->
+<style>
+  :root { --ink: #1b1b3a; --muted: #5a5a78; --purple: #7B5CF0; --navy: #251A5E; --err: #C2334F; --ok: #1F8A5B; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; color: var(--ink); line-height: 1.5; background: #f6f4ff; }
+  header { background: var(--navy); color: #fff; padding: 22px 20px; text-align: center; }
+  header h1 { margin: 0; font-size: 24px; }
+  header p { margin: 6px 0 0; opacity: .85; font-size: 15px; }
+  main { max-width: 440px; margin: 0 auto; padding: 24px 20px 40px; }
+  .card { background: #fff; border-radius: 18px; padding: 22px 20px; box-shadow: 0 2px 14px rgba(37,26,94,.08); }
+  h2 { font-size: 19px; margin: 0 0 6px; }
+  p.lead { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+  label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+  input { width: 100%; font-size: 18px; padding: 13px 14px; border: 2px solid #d9d4f5; border-radius: 12px; outline: none; color: var(--ink); background: #fff; }
+  input:focus { border-color: var(--purple); }
+  input.code { letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  input.otp { letter-spacing: 8px; text-align: center; font-weight: 700; font-size: 24px; }
+  button { width: 100%; font-size: 17px; font-weight: 700; padding: 14px; border: 0; border-radius: 14px; margin-top: 16px; cursor: pointer; }
+  button.primary { background: var(--purple); color: #fff; }
+  button.apple { background: #000; color: #fff; }
+  button.link { background: none; color: var(--purple); font-weight: 600; font-size: 15px; padding: 8px; margin-top: 8px; }
+  button:disabled { opacity: .55; cursor: default; }
+  .or { text-align: center; color: var(--muted); font-size: 13px; margin: 16px 0 0; }
+  .msg { margin-top: 14px; padding: 12px 14px; border-radius: 12px; font-size: 15px; display: none; }
+  .msg.err { display: block; background: #fdecef; color: var(--err); }
+  .msg.ok { display: block; background: #e8f7ef; color: var(--ok); }
+  .who { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .done h2 { color: var(--ok); }
+  ol { padding-left: 20px; margin: 10px 0 0; }
+  footer { text-align: center; font-size: 13px; color: var(--muted); margin-top: 26px; }
+  footer a { color: var(--purple); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BrainBox</h1>
+  <p>Enter your class or event code</p>
+</header>
+
+<main>
+  <noscript><div class="card"><p>This page needs JavaScript turned on.</p></div></noscript>
+
+  <!-- Step 1: sign in with the account made in the app -->
+  <section class="card" id="step-signin" hidden>
+    <h2>Sign in</h2>
+    <p class="lead">Use the same account you created in the BrainBox app. No account yet? Install the app and create one first, then come back here.</p>
+
+    <button class="apple" id="apple-btn" type="button" hidden>&#63743; Sign in with Apple</button>
+    <p class="or" id="apple-or" hidden>or with your email</p>
+
+    <form id="email-form">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      <button class="primary" id="email-btn" type="submit">Send me a sign-in code</button>
+    </form>
+
+    <form id="otp-form" hidden>
+      <label for="otp">6-digit code from your email</label>
+      <input id="otp" class="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      <button class="primary" id="otp-btn" type="submit">Sign in</button>
+      <button class="link" id="otp-back" type="button">Use a different email</button>
+    </form>
+    <div class="msg" id="signin-msg" role="status"></div>
+  </section>
+
+  <!-- Step 2: enter the code -->
+  <section class="card" id="step-code" hidden>
+    <p class="who" id="who"></p>
+    <h2>Enter your code</h2>
+    <p class="lead">From your school, a BrainBox talk or our booth.</p>
+    <form id="code-form">
+      <label for="code">Code</label>
+      <input id="code" class="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="e.g. YORKHOUSE" required>
+      <button class="primary" id="code-btn" type="submit">Unlock</button>
+    </form>
+    <div class="msg" id="code-msg" role="status"></div>
+    <button class="link" id="signout" type="button">Sign out</button>
+  </section>
+
+  <!-- Step 3: done -->
+  <section class="card done" id="step-done" hidden>
+    <h2 id="done-title">Unlocked</h2>
+    <p id="done-body"></p>
+    <ol>
+      <li>Open the BrainBox app.</li>
+      <li>If it was already open, close it and open it again.</li>
+      <li>Settings shows your access under Plan.</li>
+    </ol>
+    <button class="link" id="another" type="button">Enter another code</button>
+  </section>
+
+  <footer>
+    Help: <a href="mailto:support@brainboxeduc.com">support@brainboxeduc.com</a> ·
+    <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a>
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+(function () {
+  // Public values only. The publishable key ships inside the app too; never put a secret key here.
+  var SUPABASE_URL = 'https://chhrkvilpuxtcinragkc.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_Zydota601EIs85ZJLyM1sA_EiifVBQe';
+  // Web Sign in with Apple needs a Services ID and its secret in Supabase (see NOTES_FOR_REZA.md).
+  // Leave false until that is set up, or the button lands on an Apple error page.
+  var APPLE_WEB = false;
+  var PAGE_URL = 'https://r-samanfar.github.io/brainbox-legal/code.html';
+
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: true, detectSessionInUrl: true, flowType: 'pkce' }
+  });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var email = '';
+
+  function show(step) {
+    ['step-signin', 'step-code', 'step-done'].forEach(function (s) { $(s).hidden = s !== step; });
+  }
+  function say(el, kind, text) { el.className = 'msg ' + kind; el.textContent = text; }
+  function clear(el) { el.className = 'msg'; el.textContent = ''; }
+  function busy(btn, on, label) { btn.disabled = on; if (label) btn.textContent = label; }
+  function normalise(raw) { return String(raw || '').toUpperCase().replace(/[\s-]/g, ''); }
+  function fmt(iso) {
+    var d = new Date(iso);
+    return isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  // Same wording as the app (src/lib/purchases/class-codes-logic.ts redeemMessage).
+  function codeError(err) {
+    switch (err) {
+      case 'invalid_code': return 'Code not found. Check the spelling and try again. Codes are not case sensitive.';
+      case 'expired': return 'Code expired. This code is no longer active. Email support@brainboxeduc.com if you think it should work.';
+      case 'exhausted': return 'Code fully used. This code has reached its limit. Email support@brainboxeduc.com and we will sort it out.';
+      case 'rate_limited': return 'Too many tries. Please wait an hour and try again.';
+      default: return 'Could not redeem. Please try again in a moment.';
+    }
+  }
+
+  // Accounts are made in the app only (13+ age gate). The app creates the profile row at sign-up.
+  async function hasAppAccount(userId) {
+    var r = await sb.from('profiles').select('id').eq('id', userId).maybeSingle();
+    return !r.error && !!r.data;
+  }
+
+  async function enterSignedIn(session) {
+    if (!(await hasAppAccount(session.user.id))) {
+      await sb.auth.signOut();
+      show('step-signin');
+      say($('signin-msg'), 'err', 'We could not find a BrainBox account for that sign-in. Create your account in the app first, then come back here.');
+      return;
+    }
+    $('who').textContent = 'Signed in as ' + (session.user.email || 'your Apple account');
+    clear($('code-msg'));
+    show('step-code');
+    $('code').focus();
+  }
+
+  // ---- email code sign-in (never creates an account) ----
+  $('email-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = $('email-btn');
+    email = $('email').value.trim();
+    clear($('signin-msg'));
+    busy(btn, true, 'Sending...');
+    var r = await sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false } });
+    busy(btn, false, 'Send me a sign-in code');
+    if (r.error) {
+      var m = r.error.message || '';
+      if (/signups? not allowed|not found|user not/i.test(m)) {
+        say($('signin-msg'), 'err', 'No BrainBox account uses that email. Create your account in the app first, or use the email you signed up with.');
+      } else if (/rate|too many|seconds/i.test(m)) {
+        say($('signin-msg'), 'err', 'Too many attempts. Please wait a minute and try again.');
+      } else {
+        say($('signin-msg'), 'err', 'Could not send the code. Please try again.');
+      }
+      return;
+    }
+    $('email-form').hidden = true;
+    $('otp-form').hidden = false;
+    say($('signin-msg'), 'ok', 'We sent a 6-digit code to ' + email + '. It expires in 10 minutes.');
+    $('otp').focus();
+  });
+
+  $('otp-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = $('otp-btn');
+    busy(btn, true, 'Checking...');
+    var r = await sb.auth.verifyOtp({ email: email, token: $('otp').value.trim(), type: 'email' });
+    busy(btn, false, 'Sign in');
+    if (r.error || !r.data.session) {
+      say($('signin-msg'), 'err', 'That code is not right or has expired. Request a new one.');
+      return;
+    }
+    clear($('signin-msg'));
+    await enterSignedIn(r.data.session);
+  });
+
+  $('otp-back').addEventListener('click', function () {
+    $('otp-form').hidden = true;
+    $('email-form').hidden = false;
+    $('otp').value = '';
+    clear($('signin-msg'));
+  });
+
+  // ---- Sign in with Apple (web) ----
+  if (APPLE_WEB) {
+    $('apple-btn').hidden = false;
+    $('apple-or').hidden = false;
+    $('apple-btn').addEventListener('click', async function () {
+      var r = await sb.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: PAGE_URL } });
+      if (r.error) say($('signin-msg'), 'err', 'Could not start Sign in with Apple. Please try again.');
+    });
+  }
+
+  // ---- redeem ----
+  $('code-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = $('code-btn');
+    var code = normalise($('code').value);
+    clear($('code-msg'));
+    if (!/^[A-Z0-9]{4,32}$/.test(code)) {
+      say($('code-msg'), 'err', 'Codes are 4 to 32 letters or numbers.');
+      return;
+    }
+    busy(btn, true, 'Checking...');
+    var r = await sb.rpc('redeem_class_code', { p_code: code });
+    busy(btn, false, 'Unlock');
+    if (r.error) {
+      if (/JWT|not authenticated/i.test(r.error.message || '')) {
+        show('step-signin');
+        say($('signin-msg'), 'err', 'Your sign-in expired. Please sign in again.');
+      } else {
+        say($('code-msg'), 'err', 'Could not redeem. Check your connection and try again.');
+      }
+      return;
+    }
+    var d = r.data || {};
+    if (d.ok) {
+      $('done-title').textContent = (d.label || 'Code') + ' unlocked';
+      $('done-body').textContent = 'Every course is open until ' + fmt(d.expires_at) + '.';
+      show('step-done');
+    } else if (d.error === 'already_redeemed') {
+      $('done-title').textContent = 'Already on your account';
+      $('done-body').textContent = d.expires_at ? 'This code is already active, until ' + fmt(d.expires_at) + '.' : 'This code is already active on your account.';
+      show('step-done');
+    } else {
+      say($('code-msg'), 'err', codeError(d.error));
+    }
+  });
+
+  $('another').addEventListener('click', function () { $('code').value = ''; clear($('code-msg')); show('step-code'); });
+  $('signout').addEventListener('click', async function () { await sb.auth.signOut(); show('step-signin'); });
+
+  // ---- start: restore a session (or finish an Apple redirect) ----
+  (async function () {
+    var r = await sb.auth.getSession();
+    if (r.data && r.data.session) await enterSignedIn(r.data.session);
+    else show('step-signin');
+  })();
+})();
+</script>
+</body>
+</html>
