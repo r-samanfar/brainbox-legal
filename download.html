@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>BrainBox: get the app</title>
+<!--
+  Booth download page for the conference. One line of instruction, one button per platform.
+  The Android button points to the EAS build artifact for the qa-profile APK (current as of
+  the build listed in RELEASE_LEDGER); artifacts expire after 30 days, so refresh this link
+  after each new build. The App Store button goes live automatically once Apple approves.
+  Source: published from r-samanfar/brainbox-legal, same style as code.html.
+-->
+<style>
+  :root { --ink: #1b1b3a; --muted: #5a5a78; --purple: #7B5CF0; --navy: #251A5E; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; color: var(--ink); line-height: 1.5; background: #f6f4ff; }
+  header { background: var(--navy); color: #fff; padding: 22px 20px; text-align: center; }
+  header h1 { margin: 0; font-size: 24px; }
+  header p { margin: 6px 0 0; opacity: .85; font-size: 15px; }
+  main { max-width: 440px; margin: 0 auto; padding: 24px 20px 40px; }
+  .card { background: #fff; border-radius: 18px; padding: 22px 20px; box-shadow: 0 2px 14px rgba(37,26,94,.08); margin-bottom: 16px; text-align: center; }
+  h2 { font-size: 19px; margin: 0 0 6px; }
+  p.lead { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+  .os { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--purple); margin: 0 0 4px; }
+  a.btn { display: block; font-size: 17px; font-weight: 700; padding: 14px; border-radius: 14px; margin-top: 12px; text-decoration: none; }
+  a.android { background: var(--purple); color: #fff; }
+  a.ios { background: #000; color: #fff; }
+  footer { text-align: center; font-size: 13px; color: var(--muted); margin-top: 26px; }
+  footer a { color: var(--purple); }
+</style>
+</head>
+<body>
+<header>
+  <h1>BrainBox</h1>
+  <p>Life skills for real life</p>
+</header>
+
+<main>
+  <section class="card">
+    <p class="os">Android</p>
+    <h2>Get BrainBox</h2>
+    <p class="lead">Tap Download, then tap "Allow" when Android asks. That's it.</p>
+    <a class="btn android" href="https://expo.dev/artifacts/eas/7StmODuBLLsBQNYZD3PNCpTOLcOeVDPMoO9wnsl7EPA.apk">Download for Android</a>
+  </section>
+
+  <section class="card">
+    <p class="os">iPhone</p>
+    <h2>BrainBox on the App Store</h2>
+    <p class="lead">Free to download. First lesson in every course is free.</p>
+    <a class="btn ios" href="https://apps.apple.com/ca/app/brainbox-life-skills/id6816331157">Download on the App Store</a>
+  </section>
+
+  <footer>Questions? <a href="https://r-samanfar.github.io/brainbox-legal/support.html">Help &amp; support</a></footer>
+</main>
+</body>
+</html>
